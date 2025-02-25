@@ -39,31 +39,19 @@ services:
     networks:
       <<: *loki-dns
 
-  promtail:
-    image: grafana/promtail:2.9.2
+  alloy:
+    image: grafana/alloy:v1.5.1
     volumes:
-      - ../observability/promtail/promtail-local-config.yaml:/etc/promtail/config.yaml:ro
+      - ../observability/alloy/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock
-    command: -config.file=/etc/promtail/config.yaml
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    ports:
+      - 12345:12345
     depends_on:
       - gateway
     extends:
       file: common-config.yml
       service: network-deploy-service
-
-#  alloy:
-#    image: grafana/alloy:v1.5.1
-#    volumes:
-#      - ../observability/alloy/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
-#    ports:
-#      - 12345:12345
-#    depends_on:
-#      - gateway
-#    extends:
-#      file: common-config.yml
-#      service: network-deploy-service
 
   minio:
     image: minio/minio:RELEASE.2024-12-18T13-15-44Z
@@ -227,7 +215,7 @@ services:
       service: network-deploy-service
 
   configserver:
-    image: "eazybytes/configserver:s11"
+    image: "raji525/configserver:s11"
     container_name: configserver-ms
     ports:
       - "8071:8071"
@@ -244,7 +232,7 @@ services:
       OTEL_SERVICE_NAME: "configserver"
 
   eurekaserver:
-    image: "eazybytes/eurekaserver:s11"
+    image: "raji525/eurekaserver:s11"
     container_name: eurekaserver-ms
     ports:
       - "8070:8070"
@@ -265,7 +253,7 @@ services:
       OTEL_SERVICE_NAME: "eurekaserver"
 
   accounts:
-    image: "eazybytes/accounts:s11"
+    image: "raji525/accounts:s11"
     container_name: accounts-ms
     ports:
       - "8080:8080"
@@ -288,7 +276,7 @@ services:
       service: microservice-eureka-config
 
   loans:
-    image: "eazybytes/loans:s11"
+    image: "raji525/loans:s11"
     container_name: loans-ms
     ports:
       - "8090:8090"
@@ -311,7 +299,7 @@ services:
       service: microservice-eureka-config
 
   cards:
-    image: "eazybytes/cards:s11"
+    image: "raji525/cards:s11"
     container_name: cards-ms
     ports:
       - "9000:9000"
@@ -334,7 +322,7 @@ services:
       service: microservice-eureka-config
 
   gatewayserver:
-    image: "eazybytes/gatewayserver:s11"
+    image: "raji525/gatewayserver:s11"
     container_name: gatewayserver-ms
     ports:
       - "8072:8072"
